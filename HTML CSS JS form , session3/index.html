@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Application</title>
+    <style>
+      /* Your styles remain unchanged */
+      body {
+        padding: 20px;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      form {
+        width: 100%;
+        max-width: 600px;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 18px rgba(0, 0, 0, 0.1);
+      }
+
+      div {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        margin-top: 2px;
+        font-weight: bold;
+        color: #555;
+      }
+
+      input,
+      select,
+      textarea,
+      button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 15px;
+        box-sizing: border-box;
+      }
+
+      button {
+        width: 100%;
+        padding: 15px;
+        background-color: green;
+        color: white;
+        font-size: 20px;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+
+      button[type="reset"] {
+        background-color: red;
+      }
+
+      button:hover {
+        background-color: rgb(12, 109, 12);
+      }
+
+      button[type="reset"]:hover {
+        background-color: rgb(178, 24, 24);
+      }
+    </style>
+  </head>
+  <body>
+    <form action="" id="jobApplication">
+      <div>
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" name="full_name" required />
+      </div>
+
+      <div>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+
+      <div>
+        <label for="phone">Phone</label>
+        <input
+          type="tel"
+          id="phone"
+          name="phone"
+          placeholder="123-456-789"
+          required
+          pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+        />
+      </div>
+
+      <div>
+        <label for="position">Position</label>
+        <select name="position" id="position">
+          <option value="Select a position">Select a position</option>
+          <option value="Software Engineer">Software Engineer</option>
+          <option value="Data Analyst">Data Analyst</option>
+          <option value="Project Manager">Project Manager</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="salary">Salary</label>
+        <input
+          type="number"
+          id="salary"
+          name="salary"
+          required
+          placeholder="Salary"
+        />
+      </div>
+
+      <div>
+        <label for="cover_letter">Cover Letter</label>
+        <textarea
+          name="cover_letter"
+          id="cover_letter"
+          cols="50"
+          rows="5"
+          maxlength="500"
+          placeholder="Enter your cover letter here..."
+        ></textarea>
+      </div>
+
+      <div>
+        <label for="resume">Upload Resume</label>
+        <input type="file" name="resume" id="resume" accept=".pdf,.doc,.docx" />
+      </div>
+
+      <div class="radio-group">
+        <label>Gender</label>
+        <label for="gender_male">Male</label>
+        <input
+          type="radio"
+          id="gender_male"
+          name="gender"
+          value="male"
+          required
+        />
+        <label for="gender_female">Female</label>
+        <input
+          type="radio"
+          id="gender_female"
+          name="gender"
+          value="female"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="experience">Experience</label>
+        <input
+          type="number"
+          id="experience"
+          name="experience"
+          placeholder="Enter experience in years"
+          min="1"
+          max="12"
+          step="1"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="available_date">Available Date</label>
+        <input
+          type="datetime-local"
+          id="available_date"
+          name="available_date"
+        />
+      </div>
+
+      <div>
+        <input
+          type="hidden"
+          id="form_id"
+          name="form_id"
+          value="jobApplication001"
+        />
+      </div>
+
+      <div id="demo">
+        <button type="button" onClick="getLocation()">Get Location</button>
+      </div>
+
+      <div>
+        <button type="reset">Reset</button>
+      </div>
+
+      <div>
+        <button type="submit">Submit Application</button>
+      </div>
+    </form>
+
+    <script>
+      document
+        .getElementById("jobApplication")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const formdata = new FormData(event.target);
+          const formobj = Object.fromEntries(formdata.entries());
+
+          const locationdiv = document.getElementById("demo");
+          const latitude = locationdiv?.dataset.latitude || "";
+          const longitude = locationdiv?.dataset.longitude || "";
+
+          formobj.latitude = latitude;
+          formobj.longitude = longitude;
+
+          const jsonString = JSON.stringify(formobj, null, 2);
+          const blob = new Blob([jsonString], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "job_application.json";
+          document.body.appendChild(a);
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+
+      function getLocation() {
+        if (navigator.geolocation) {
+          //Geolocation API
+          navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+          document.getElementById("demo").innerHTML =
+            "Geolocation is not supported by your browser.";
+        }
+      }
+
+      function showPosition(position) {
+        const locationDiv = document.getElementById("demo");
+        locationDiv.dataset.latitude = position.coords.latitude;
+        locationDiv.dataset.longitude = position.coords.longitude;
+
+        locationDiv.innerHTML =
+          "Latitude: " +
+          position.coords.latitude +
+          "<br>Longitude: " +
+          position.coords.longitude;
+      }
+    </script>
+  </body>
+</html>
