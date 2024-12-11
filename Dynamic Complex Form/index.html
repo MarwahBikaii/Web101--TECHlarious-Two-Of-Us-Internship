@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dynamic Order Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    .form-container {
+      width: 90%;
+      max-width: 900px;
+      margin: 30px auto;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    h2, h3 {
+      color: #333;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 5px;
+      margin-bottom: 15px;
+    }
+    .form-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    label {
+      font-weight: bold;
+      flex: 1 1 150px;
+      color: #555;
+    }
+    input, select {
+      flex: 1 1 200px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      outline: none;
+      font-size: 14px;
+    }
+    input:focus, select:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      table-layout: fixed;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+      word-wrap: break-word;
+      overflow: hidden;
+    }
+    th {
+      background-color: #f4f4f4;
+      font-weight: bold;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .totals p {
+      font-size: 16px;
+      margin: 5px 0;
+      font-weight: bold;
+    }
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    .shippingdetails {
+      margin-top: 15px;
+    }
+
+    /* Responsive adjustments for small screens */
+    @media (max-width: 768px) {
+      .form-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      input, select {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      .totals p {
+        font-size: 14px;
+      }
+      .form-actions {
+        flex-direction: column;
+      }
+      .form-actions button {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      table {
+        width: 100%;
+        overflow-x: auto;
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Review Orders</h2>
+    <form id="order-form">
+      <!-- Customer and Employee Details -->
+      <div class="form-row">
+        <label for="customer">Customer:</label>
+        <input type="text" id="customer" name="customer" required />
+        <label for="employee">Employee:</label>
+        <input type="text" id="employee" name="employee" required/>
+      </div>
+      <div class="form-row">
+        <label for="orderDate">Order Date:</label>
+        <input type="date" id="orderDate" name="orderDate" required/>
+        <label for="requiredDate">Required Date:</label>
+        <input type="date" id="requiredDate" name="requiredDate" required />
+      </div>
+      <div class="form-row">
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" required/>
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" required/>
+      </div>
+      <div class="form-row">
+        <label for="postalCode">Postal Code:</label>
+        <input type="text" id="postalCode" name="postalCode" required />
+        <label for="shipcountry">Ship Country:</label>
+        <input type="text" id="shipcountry" name="shipcountry" required/>
+      </div>
+      <div class="form-row">
+        <label for="shippeddate">Shipped Date:</label>
+        <input type="date" id="shippeddate" name="shippeddate" required/>
+        <label for="region">Region:</label>
+        <input type="text" id="region" name="region" required/>
+      </div>
+      <h3>Order Review</h3>
+      <table id="orderReview-table">
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Unit Price</th>
+            <th>Quantity</th>
+            <th>Discount</th>
+            <th>Product Category Name</th>
+            <th>Product Supplier Company Name</th>
+            <th>Extended Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Dynamic Rows Will Be Added Here -->
+        </tbody>
+      </table>
+      <h3>Place a new entry</h3>
+      <table id="newproducts-table">
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Unit Price</th>
+            <th>Quantity</th>
+            <th>Discount</th>
+            <th>Product Category Name</th>
+            <th>Product Supplier Company Name</th>
+            <th>Extended Price</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Dynamic Rows Will Be Added Here -->
+        </tbody>
+      </table>
+      <br />
+      <button type="button" id="add-row-btn">Add Product</button>
+      <!-- Subtotals -->
+      <div class="totals">
+        <p>Subtotal: <span id="subtotal">$0.00</span></p>
+        <p> Freight: $<input type="number" id="freight" value="0" min="0" step="0.01" /> </p>
+        <p>Total: <span id="total">$0.00</span></p>
+      </div>
+      <div class="shippingdetails">
+        <label for="shipname">Ship Name:</label>
+        <input type="text" id="shipname" name="shipname" />
+      </div>
+      <div class="shippingdetails">
+        <label for="shipvia">Ship Via:</label>
+        <select id="shipvia" name="shipvia">
+          <option value="UPS">UPS</option>
+          <option value="FedEx">FedEx</option>
+          <option value="DHL">DHL</option>
+          <option value="USPS">USPS</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="button" id="save-btn">Save as JSON</button>
+        <button type="reset">Reset</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
+
+    <script>
+      // JavaScript Code
+      document.addEventListener("DOMContentLoaded", () => {
+        const productTable = document.querySelector("#newproducts-table tbody");
+        const addRowBtn = document.getElementById("add-row-btn");
+        const subtotalEl = document.getElementById("subtotal");
+        const totalEl = document.getElementById("total");
+        const freightInput = document.getElementById("freight");
+        const saveBtn = document.getElementById("save-btn");
+        const saveOrder = document.getElementById("add-order-btn");
+
+        const deleteOrderProduct = document.getElementById(
+          "deleteProductOrder-btn"
+        );
+
+        const PlaceNewOrder = document.getElementById("order-btn");
+
+        let subtotal = 0;
+
+        // Function to add a new product row
+        function addProductRow() {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                          <td><input type="text" placeholder="Product Name" required></td>
+                          <td><input type="number" placeholder="Unit Price" min="0" step="0.01"></td>
+                          <td><input type="number" placeholder="Quantity" min="1"></td>
+                          <td><input type="number" placeholder="Discount (%)" min="0" max="100"></td>
+                          <td><input type="text" placeholder="Product Category Name" required></td>
+                          <td><input type="text" placeholder="Product Supplier Company Name" required></td>
+                          <td class="extended-price">$0.00</td>
+                          <td><button class="delete-btn">Delete</button></td>
+                        `;
+          productTable.appendChild(row);
+
+          const deleteBtn = row.querySelector(".delete-btn");
+          deleteBtn.addEventListener("click", () => {
+            row.remove();
+            updateTotal();
+          });
+        }
+
+        // Function to update totals
+        function updateTotal() {
+          subtotal = 0;
+          const rows = productTable.querySelectorAll("tr");
+          rows.forEach((row) => {
+            const price = parseFloat(row.children[1].children[0].value) || 0;
+            const quantity = parseInt(row.children[2].children[0].value) || 0;
+            const discount = parseFloat(row.children[3].children[0].value) || 0;
+
+            const extendedPrice = price * quantity * (1 - discount / 100);
+            row.querySelector(
+              ".extended-price"
+            ).innerText = `$${extendedPrice.toFixed(2)}`;
+            subtotal += extendedPrice;
+          });
+
+          subtotalEl.innerText = `$${subtotal.toFixed(2)}`;
+          const freight = parseFloat(freightInput.value) || 0;
+          totalEl.innerText = `$${(subtotal + freight).toFixed(2)}`;
+        }
+
+        // Reset the form and totals
+        const resetBtn = document.querySelector("button[type='reset']");
+        resetBtn.addEventListener("click", () => {
+          productTable.innerHTML = ""; // Clear product rows
+          subtotalEl.innerText = "$0.00"; // Reset subtotal
+          totalEl.innerText = "$0.00"; // Reset total
+          freightInput.value = "0"; // Reset freight
+        });
+
+        // Save form data to JSON
+        function saveToJSON() {
+          const formData = {
+            customer: document.getElementById("customer").value,
+            employee: document.getElementById("employee").value,
+            orderDate: document.getElementById("orderDate").value,
+            requiredDate: document.getElementById("requiredDate").value,
+            address: document.getElementById("address").value,
+            city: document.getElementById("city").value,
+            postalCode: document.getElementById("postalCode").value,
+            shipCountry: document.getElementById("shipcountry").value,
+            shippedDate: document.getElementById("shippeddate").value,
+            region: document.getElementById("region").value,
+            shipName: document.getElementById("shipname").value,
+            shipVia: document.getElementById("shipvia").value,
+            subtotal: document.getElementById("subtotal").innerText,
+
+            freight: parseFloat(freightInput.value),
+            products: [],
+          };
+
+          productTable.querySelectorAll("tr").forEach((row) => {
+            const product = {
+              name: row.children[0].children[0].value, // Product Name
+              unitPrice: parseFloat(row.children[1].children[0].value) || 0, // Unit Price
+              quantity: parseInt(row.children[2].children[0].value) || 0, // Quantity
+              discount: parseFloat(row.children[3].children[0].value) || 0, // Discount
+              productCategoryName: row.children[4].children[0].value, // Product Category
+              productSupplierCompanyName: row.children[5].children[0].value, // Supplier Company
+              extendedPrice:
+                parseFloat(
+                  row
+                    .querySelector(".extended-price")
+                    .innerText.replace("$", "")
+                ) || 0, // Extended Price
+            };
+
+            formData.products.push(product);
+          });
+
+          const blob = new Blob([JSON.stringify(formData, null, 2)], {
+            type: "application/json",
+          });
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = "order_data.json"; // The user will be able to save the file with this name
+          link.click(); // Simulate a click to start the download
+        }
+
+        function saveOrderToJSON() {
+          localStorage.clear();
+          const productTable = document.querySelector("#order-table tbody");
+
+          const formData = {
+            customer: document.getElementById("customer").value,
+            employee: document.getElementById("employee").value,
+            orderDate: document.getElementById("orderDate").value,
+            requiredDate: document.getElementById("requiredDate").value,
+            address: document.getElementById("address").value,
+            city: document.getElementById("city").value,
+            postalCode: document.getElementById("postalCode").value,
+            shipCountry: document.getElementById("shipcountry").value,
+            shippedDate: document.getElementById("shippeddate").value,
+            region: document.getElementById("region").value,
+            shipName: document.getElementById("shipname").value,
+            shipVia: document.getElementById("shipvia").value,
+
+            freight: parseFloat(freightInput.value),
+            products: [],
+          };
+
+          productTable.querySelectorAll("tr").forEach((row) => {
+            const product = {
+              name: row.children[0].children[0].value, // Product Name
+              unitPrice: parseFloat(row.children[1].children[0].value) || 0, // Unit Price
+              quantity: parseInt(row.children[2].children[0].value) || 0, // Quantity
+              discount: parseFloat(row.children[3].children[0].value) || 0, // Discount
+              productCategoryName: row.children[4].children[0].value, // Product Category
+              productSupplierCompanyName: row.children[5].children[0].value, // Supplier Company
+              extendedPrice:
+                parseFloat(
+                  row
+                    .querySelector(".extended-price")
+                    .innerText.replace("$", "")
+                ) || 0, // Extended Price
+            };
+
+            formData.products.push(product);
+          });
+
+          const blob = new Blob([JSON.stringify(formData, null, 2)], {
+            type: "application/json",
+          });
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = "order_data.json"; // The user will be able to save the file with this name
+          link.click(); // Simulate a click to start the download
+        }
+
+        // Event listeners
+        addRowBtn.addEventListener("click", addProductRow);
+        productTable.addEventListener("input", updateTotal);
+        freightInput.addEventListener("input", updateTotal);
+        saveBtn.addEventListener("click", saveToJSON);
+      });
+
+      function fetchOrderData(customerName) {
+        fetch("order_data.json") // Assuming orders.json is in the same directory
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data); // Check the structure of the returned data
+            const order = data.orders.find(
+              (order) =>
+                order.customer.toLowerCase() === customerName.toLowerCase()
+            );
+            console.log(order); // Log the order to see if it's found
+
+            if (order) {
+              // Populate form fields with the data from the order
+              document.getElementById("customer").value = order.customer;
+              document.getElementById("employee").value = order.employee;
+              document.getElementById("orderDate").value = order.orderDate;
+              document.getElementById("requiredDate").value = order;
+              document.getElementById("address").value = order.address;
+              document.getElementById("city").value = order.city;
+              document.getElementById("postalCode").value = order.postalCode;
+              document.getElementById("shipcountry").value = order.shipCountry;
+              document.getElementById("shippeddate").value = order.shippedDate;
+              document.getElementById("region").value = order.region;
+              document.getElementById("shipname").value = order.shipName;
+              document.getElementById("shipvia").value = order.shipVia;
+              document.getElementById("freight").value = order.freight;
+
+              const productTable = document.getElementById("orderReview-table");
+              // Clear existing rows and populate the product table
+              const tbody = productTable.querySelector("tbody"); // Get the tbody element
+
+              tbody.innerHTML = "";
+              order.products.forEach((product) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+            <td><input type="text" value="${product.name}" required></td>
+              <td class="extended-price" type="text" value="${product.unitPrice}">${product.unitPrice}</td>
+            <td><input type="number" value="${product.quantity}" min="1"></td>
+            <td><input type="number" value="${product.discount}" min="0" max="100"></td>
+            <td><input type="text" value="${product.ProductCategoryName}" required></td>
+            <td><input type="text" value="${product.ProductSupplierCompanyName}" required></td>
+            <td><input type="text" value="${product.extendedPrice}" required></td>
+
+          `;
+                tbody.appendChild(row);
+                
+              });
+            } else {
+              console.log("No order found for customer:", customerName);
+            }
+          })
+          .catch((error) => console.error("Error fetching order data:", error));
+      }
+
+      // Event listener for customer input field
+      document.getElementById("customer").addEventListener("input", (event) => {
+        const customerName = event.target.value;
+        if (customerName) {
+          fetchOrderData(customerName); // Fetch order data when customer name is entered
+        }
+      });
+
+     
+    </script>
+  </body>
+</html>
